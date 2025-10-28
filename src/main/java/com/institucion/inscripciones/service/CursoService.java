@@ -1,0 +1,48 @@
+package com.institucion.inscripciones.service;
+
+import com.institucion.inscripciones.model.Curso;
+import com.institucion.inscripciones.repository.CursoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class CursoService {
+
+    @Autowired
+    private CursoRepository cursoRepository;
+
+    // CREAR/GUARDAR CURSO
+    public Curso crearCurso(Curso curso) {
+        return cursoRepository.save(curso);
+    }
+
+    // MOSTRAR/OBTENER TODOS LOS CURSOS
+    public List<Curso> obtenerTodos() {
+        return cursoRepository.findAll();
+    }
+
+    // OBTENER CURSO POR ID
+    public Optional<Curso> obtenerPorId(Long id) {
+        return cursoRepository.findById(id);
+    }
+
+    // ACTUALIZAR CURSO
+    public Curso actualizarCurso(Long id, Curso detallesCurso) {
+        return cursoRepository.findById(id).map(cursoExistente -> {
+            cursoExistente.setNombre(detallesCurso.getNombre());
+            cursoExistente.setDescripcion(detallesCurso.getDescripcion());
+            cursoExistente.setCreditos(detallesCurso.getCreditos());
+            return cursoRepository.save(cursoExistente);
+        }).orElseThrow(() -> new RuntimeException("Curso no encontrado con ID: " + id));
+    }
+
+    // ELIMINAR CURSO
+    public void eliminarCurso(Long id) {
+        if (!cursoRepository.existsById(id)) {
+            throw new RuntimeException("Curso no encontrado con ID: " + id);
+        }
+        cursoRepository.deleteById(id);
+    }
+}
