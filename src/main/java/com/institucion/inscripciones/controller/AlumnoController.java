@@ -1,5 +1,6 @@
 package com.institucion.inscripciones.controller;
 
+import com.institucion.inscripciones.dto.Alumnos.AlumnoRequest;
 import com.institucion.inscripciones.model.Alumno;
 import com.institucion.inscripciones.service.AlumnoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class AlumnoController {
 
     // CREAR ALUMNO (POST)
     @PostMapping
-    public ResponseEntity<Alumno> crearAlumno(@RequestBody Alumno alumno) {
+    public ResponseEntity<Alumno> crearAlumno(@RequestBody AlumnoRequest alumno) {
         Alumno nuevoAlumno = alumnoService.crearAlumno(alumno);
         return new ResponseEntity<>(nuevoAlumno, HttpStatus.CREATED);
     }
@@ -39,7 +40,7 @@ public class AlumnoController {
 
     // ACTUALIZAR ALUMNO (PUT)
     @PutMapping("/{id}")
-    public ResponseEntity<Alumno> actualizarAlumno(@PathVariable Long id, @RequestBody Alumno detallesAlumno) {
+    public ResponseEntity<Alumno> actualizarAlumno(@PathVariable Long id, @RequestBody AlumnoRequest detallesAlumno) {
         try {
             Alumno alumnoActualizado = alumnoService.actualizarAlumno(id, detallesAlumno);
             return ResponseEntity.ok(alumnoActualizado);

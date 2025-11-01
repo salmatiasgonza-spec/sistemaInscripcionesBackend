@@ -2,35 +2,39 @@ package com.institucion.inscripciones.service;
 
 import com.institucion.inscripciones.model.Usuario;
 import com.institucion.inscripciones.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 
 @Service
-public class UsuarioService {
+@RequiredArgsConstructor
+public class UsuarioService implements UserDetailsService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+  private final UsuarioRepository usuarioRepository;
+  private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder; // Inyectado desde la config de seguridad
-
-    // REGISTRAR UN NUEVO USUARIO
-    public Usuario registrarUsuario(Usuario usuario) {
-        // Encriptar la contraseña antes de guardarla
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        // Asegurarse de que el rol por defecto sea ADMIN (o el deseado)
-        if (usuario.getRol() == null || usuario.getRol().isEmpty()) {
-            usuario.setRol("ADMIN");
-        }
-        return usuarioRepository.save(usuario);
+  // Registro: encripta y setea rol por defecto si falta
+  public Usuario registrarUsuario(Usuario usuario) {
+    usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+    if (usuario.getRol() == null || usuario.getRol().isBlank()) {
+      usuario.setRol("USER");
     }
+    return usuarioRepository.save(usuario);
+  }
 
-    // ENCONTRAR POR USERNAME (Usado para el login)
-    public Optional<Usuario> findByUsername(String username) {
-        return usuarioRepository.findByUsername(username);
-    }
+  public Optional<Usuario> findByUsername(String username) {
+    return usuarioRepository.findByUsername(username);
+  }
 
-    // (Otras operaciones CRUD si son necesarias)
+  // requerido por Spring Security
+  @Override
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    return usuarioRepository.findByUsername(username)
+        .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+  }
 }

@@ -1,5 +1,6 @@
 package com.institucion.inscripciones.controller;
 
+import com.institucion.inscripciones.dto.Inscripciones.InscripcionRequest;
 import com.institucion.inscripciones.model.Alumno;
 import com.institucion.inscripciones.model.Curso;
 import com.institucion.inscripciones.model.Inscripcion;
@@ -21,16 +22,16 @@ public class InscripcionController {
     // MATRICULAR ALUMNO EN CURSO (POST)
     // Se espera un JSON como: {"alumnoId": 1, "cursoId": 5}
     @PostMapping("/matricular")
-    public ResponseEntity<?> matricular(@RequestBody Map<String, Long> request) {
-        Long alumnoId = request.get("alumnoId");
-        Long cursoId = request.get("cursoId");
+    public ResponseEntity<?> matricular(@RequestBody InscripcionRequest request) {
+        Long alumnoId = request.getAlumnoId();
+        Long cursoId = request.getCursoId();
 
         if (alumnoId == null || cursoId == null) {
             return ResponseEntity.badRequest().body("Se requieren 'alumnoId' y 'cursoId'.");
         }
 
         try {
-            Inscripcion inscripcion = inscripcionService.matricularAlumnoEnCurso(alumnoId, cursoId);
+            Inscripcion inscripcion = inscripcionService.matricularAlumnoEnCurso(request);
             return new ResponseEntity<>(inscripcion, HttpStatus.CREATED);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

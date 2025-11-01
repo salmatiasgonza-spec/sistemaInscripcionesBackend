@@ -1,52 +1,59 @@
 package com.institucion.inscripciones.config;
 
+import com.institucion.inscripciones.jwt.JwtRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-import static org.springframework.security.config.Customizer.withDefaults;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
-    // Bean para el encriptador de contraseñas (BCrypt)
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public SecurityFilterChain securityFilterChain(
+      HttpSecurity http,
+      JwtRequestFilter jwtRequestFilter) throws Exception { // ← inyección aquí, no en constructor
+    http
+      .csrf(csrf -> csrf.disable())
+      .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+      .authorizeHttpRequests(auth -> auth
+        .requestMatchers("/api/auth/**",
+                         "/v3/api-docs/**",
+                         "/swagger-ui/**",
+                         "/swagger-ui.html").permitAll()
+        .anyRequest().authenticated()
+      )
+      .authenticationProvider(daoAuthenticationProvider(null)) // se sobreescribe abajo por @Bean real
+      .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
-    // Configuración del Filtro de Seguridad HTTP
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                // Deshabilitar CSRF (necesario para APIs REST sin estado)
-                .csrf(AbstractHttpConfigurer::disable)
-                // Permitir CORS (necesario para frontend React en otro puerto)
-                .cors(withDefaults())
+    return http.build();
+  }
 
-                // Reglas de autorización para los endpoints
-                .authorizeHttpRequests(authorize -> authorize
-                        // Permitir acceso sin autenticación a H2 console y el endpoint de registro/login
-                        .requestMatchers("/h2-console/**", "/api/auth/registrar", "/api/auth/login").permitAll()
+  @Bean
+  public DaoAuthenticationProvider daoAuthenticationProvider(UserDetailsService uds) {
+    DaoAuthenticationProvider p = new DaoAuthenticationProvider();
+    p.setUserDetailsService(uds);
+    p.setPasswordEncoder(passwordEncoder());
+    return p;
+  }
 
-                        // TODOS los demás endpoints (CRUD de alumnos, cursos, inscripciones y reportes)
-                        // REQUIEREN autenticación.
-                        .anyRequest().authenticated()
-                )
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-                // Configuración básica de autenticación HTTP (pop-up de navegador)
-                // En un proyecto React/producción, esto se reemplazaría por JWT.
-                .httpBasic(withDefaults())
-
-                // Configuración para permitir que H2 Console funcione con iframes
-                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
-
-        return http.build();
-    }
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
+    return cfg.getAuthenticationManager();
+  }
 }

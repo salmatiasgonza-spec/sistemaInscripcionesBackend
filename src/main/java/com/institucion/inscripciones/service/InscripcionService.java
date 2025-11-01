@@ -1,5 +1,6 @@
 package com.institucion.inscripciones.service;
 
+import com.institucion.inscripciones.dto.Inscripciones.InscripcionRequest;
 import com.institucion.inscripciones.model.Alumno;
 import com.institucion.inscripciones.model.Curso;
 import com.institucion.inscripciones.model.Inscripcion;
@@ -24,15 +25,15 @@ public class InscripcionService {
     private CursoRepository cursoRepository;
 
     // MATRICULAR UN ALUMNO EN UN CURSO
-    public Inscripcion matricularAlumnoEnCurso(Long alumnoId, Long cursoId) {
-        if (inscripcionRepository.existsByAlumnoIdAndCursoId(alumnoId, cursoId)) {
+    public Inscripcion matricularAlumnoEnCurso(InscripcionRequest inscripcion) {
+        if (inscripcionRepository.existsByAlumnoIdAndCursoId(inscripcion.getAlumnoId(), inscripcion.getCursoId())) {
             throw new RuntimeException("El alumno ya está matriculado en este curso.");
         }
 
-        Alumno alumno = alumnoRepository.findById(alumnoId)
+        Alumno alumno = alumnoRepository.findById(inscripcion.getAlumnoId())
                 .orElseThrow(() -> new RuntimeException("Alumno no encontrado."));
 
-        Curso curso = cursoRepository.findById(cursoId)
+        Curso curso = cursoRepository.findById(inscripcion.getCursoId())
                 .orElseThrow(() -> new RuntimeException("Curso no encontrado."));
 
         Inscripcion nuevaInscripcion = new Inscripcion();

@@ -1,5 +1,7 @@
 package com.institucion.inscripciones.service;
 
+import com.institucion.inscripciones.Mapeos.AlumnoManualMapper;
+import com.institucion.inscripciones.dto.Alumnos.AlumnoRequest;
 import com.institucion.inscripciones.model.Alumno;
 import com.institucion.inscripciones.repository.AlumnoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +14,13 @@ public class AlumnoService {
 
     @Autowired
     private AlumnoRepository alumnoRepository;
-
+    private AlumnoManualMapper mapper;
     // CREAR/GUARDAR ALUMNO
-    public Alumno crearAlumno(Alumno alumno) {
+    public Alumno crearAlumno(AlumnoRequest alumno) {
         // Podrías añadir validaciones aquí (e.g., CI no duplicada)
-        return alumnoRepository.save(alumno);
+        Alumno entidad=mapper.toEntity(alumno);
+        return alumnoRepository.save(entidad);
+
     }
 
     // MOSTRAR/OBTENER TODOS LOS ALUMNOS
@@ -30,7 +34,7 @@ public class AlumnoService {
     }
 
     // ACTUALIZAR ALUMNO
-    public Alumno actualizarAlumno(Long id, Alumno detallesAlumno) {
+    public Alumno actualizarAlumno(Long id, AlumnoRequest detallesAlumno) {
         return alumnoRepository.findById(id).map(alumnoExistente -> {
             alumnoExistente.setNombres(detallesAlumno.getNombres());
             alumnoExistente.setApellidos(detallesAlumno.getApellidos());

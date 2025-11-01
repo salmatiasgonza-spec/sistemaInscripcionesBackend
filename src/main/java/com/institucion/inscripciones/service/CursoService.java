@@ -1,5 +1,7 @@
 package com.institucion.inscripciones.service;
 
+import com.institucion.inscripciones.Mapeos.CursoManualMapper;
+import com.institucion.inscripciones.dto.Cursos.CursoRequest;
 import com.institucion.inscripciones.model.Curso;
 import com.institucion.inscripciones.repository.CursoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +14,12 @@ public class CursoService {
 
     @Autowired
     private CursoRepository cursoRepository;
+    private CursoManualMapper mapper;
 
     // CREAR/GUARDAR CURSO
-    public Curso crearCurso(Curso curso) {
-        return cursoRepository.save(curso);
+    public Curso crearCurso(CursoRequest curso) {
+        Curso entidad=mapper.toEntity(curso);
+        return cursoRepository.save(entidad);
     }
 
     // MOSTRAR/OBTENER TODOS LOS CURSOS
@@ -29,7 +33,7 @@ public class CursoService {
     }
 
     // ACTUALIZAR CURSO
-    public Curso actualizarCurso(Long id, Curso detallesCurso) {
+    public Curso actualizarCurso(Long id, CursoRequest detallesCurso) {
         return cursoRepository.findById(id).map(cursoExistente -> {
             cursoExistente.setNombre(detallesCurso.getNombre());
             cursoExistente.setDescripcion(detallesCurso.getDescripcion());
