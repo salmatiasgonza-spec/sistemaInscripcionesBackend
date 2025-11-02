@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "usuario")
 @Data @NoArgsConstructor @AllArgsConstructor
 public class Usuario implements UserDetails {
 

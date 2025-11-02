@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 @Data // Genera Getters, Setters, toString, equals, hashCode
 @NoArgsConstructor // Genera constructor sin argumentos
 @AllArgsConstructor // Genera constructor con todos los argumentos
-@Table(name = "alumnos")
+@Table(name = "alumno")
 public class Alumno {
 
     @Id

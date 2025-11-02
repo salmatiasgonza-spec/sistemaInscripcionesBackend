@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "inscripciones")
+@Table(name = "inscripcion")
 public class Inscripcion {
 
     @Id
