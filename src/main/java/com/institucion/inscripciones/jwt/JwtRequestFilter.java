@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,6 +33,20 @@ public class JwtRequestFilter extends OncePerRequestFilter {
       HttpServletResponse response,
       FilterChain chain) throws ServletException, IOException {
 
+    String path = request.getRequestURI();
+
+    // 1) Dejar pasar sin tocar: auth, swagger, error y preflight CORS
+    if (path.startsWith("/api/auth/")
+        || path.startsWith("/v3/api-docs")
+        || path.startsWith("/swagger-ui")
+        || path.equals("/swagger-ui.html")
+        || path.equals("/error")
+        || HttpMethod.OPTIONS.matches(request.getMethod())) {
+      chain.doFilter(request, response);
+      return;
+    }
+
+    // 2) Solo procesar si hay Bearer
     String header = request.getHeader(HttpHeaders.AUTHORIZATION);
     if (header == null || !header.startsWith("Bearer ")) {
       chain.doFilter(request, response);
