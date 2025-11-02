@@ -4,7 +4,6 @@ import com.institucion.inscripciones.Mapeos.AlumnoManualMapper;
 import com.institucion.inscripciones.dto.Alumnos.AlumnoRequest;
 import com.institucion.inscripciones.model.Alumno;
 import com.institucion.inscripciones.repository.AlumnoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -12,9 +11,12 @@ import java.util.Optional;
 @Service
 public class AlumnoService {
 
-    @Autowired
     private AlumnoRepository alumnoRepository;
     private AlumnoManualMapper mapper;
+    public AlumnoService(AlumnoManualMapper mapper, AlumnoRepository alumnoRepository){
+        this.alumnoRepository=alumnoRepository;
+        this.mapper=mapper;
+    }
     // CREAR/GUARDAR ALUMNO
     public Alumno crearAlumno(AlumnoRequest alumno) {
         // Podrías añadir validaciones aquí (e.g., CI no duplicada)

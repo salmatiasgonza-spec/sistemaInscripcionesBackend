@@ -4,21 +4,26 @@ import com.institucion.inscripciones.Mapeos.CursoManualMapper;
 import com.institucion.inscripciones.dto.Cursos.CursoRequest;
 import com.institucion.inscripciones.model.Curso;
 import com.institucion.inscripciones.repository.CursoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CursoService {
 
-    @Autowired
-    private CursoRepository cursoRepository;
-    private CursoManualMapper mapper;
+    private final CursoRepository cursoRepository;
+    private final CursoManualMapper mapper;
+
+    // Inyección por constructor
+    public CursoService(CursoRepository cursoRepository, CursoManualMapper mapper) {
+        this.cursoRepository = cursoRepository;
+        this.mapper = mapper;
+    }
 
     // CREAR/GUARDAR CURSO
     public Curso crearCurso(CursoRequest curso) {
-        Curso entidad=mapper.toEntity(curso);
+        Curso entidad = mapper.toEntity(curso);
         return cursoRepository.save(entidad);
     }
 
