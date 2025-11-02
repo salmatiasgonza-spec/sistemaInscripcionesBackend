@@ -23,7 +23,7 @@ public class Usuario implements UserDetails {
   @Column(nullable = false, length = 255)
   private String password;  // guardá hash
 
-  @Column(nullable = false)
+  @Column(name="role",nullable = false)
   private String rol = "USER"; // USER o ADMIN
 
   // --- UserDetails ---
