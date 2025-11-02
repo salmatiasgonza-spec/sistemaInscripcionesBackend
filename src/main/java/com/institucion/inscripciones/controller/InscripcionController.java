@@ -67,4 +67,20 @@ public class InscripcionController {
         List<Curso> cursos = inscripcionService.obtenerCursosPorAlumno(alumnoId);
         return ResponseEntity.ok(cursos);
     }
+
+    // -------------------- NUEVOS ENDPOINTS --------------------
+
+    // INSCRIPCIONES por ALUMNO (lista de Inscripcion)
+    // GET /api/inscripciones/por-alumno/1
+    @GetMapping("/por-alumno/{alumnoId}")
+    public ResponseEntity<List<Inscripcion>> inscripcionesPorAlumno(@PathVariable Long alumnoId) {
+        return ResponseEntity.ok(inscripcionService.buscarInscripcionesPorAlumno(alumnoId));
+    }
+
+    // INSCRIPCIONES por CURSO (lista de Inscripcion)
+    // GET /api/inscripciones/por-curso/5
+    @GetMapping("/por-curso/{cursoId}")
+    public ResponseEntity<List<Inscripcion>> inscripcionesPorCurso(@PathVariable Long cursoId) {
+        return ResponseEntity.ok(inscripcionService.buscarInscripcionesPorCurso(cursoId));
+    }
 }

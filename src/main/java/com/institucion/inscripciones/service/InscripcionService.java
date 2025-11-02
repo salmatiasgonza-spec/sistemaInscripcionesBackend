@@ -46,8 +46,6 @@ public class InscripcionService {
     // CONSULTA 1: QUÉ ALUMNOS ESTÁN MATRICULADOS EN UN CURSO
     public List<Alumno> obtenerAlumnosPorCurso(Long cursoId) {
         List<Inscripcion> inscripciones = inscripcionRepository.findByCursoId(cursoId);
-
-        // Mapear las inscripciones para obtener solo la lista de Alumnos
         return inscripciones.stream()
                 .map(Inscripcion::getAlumno)
                 .collect(Collectors.toList());
@@ -56,8 +54,6 @@ public class InscripcionService {
     // CONSULTA 2: A QUÉ CURSO ESTÁ MATRICULADO UN ALUMNO
     public List<Curso> obtenerCursosPorAlumno(Long alumnoId) {
         List<Inscripcion> inscripciones = inscripcionRepository.findByAlumnoId(alumnoId);
-
-        // Mapear las inscripciones para obtener solo la lista de Cursos
         return inscripciones.stream()
                 .map(Inscripcion::getCurso)
                 .collect(Collectors.toList());
@@ -69,5 +65,17 @@ public class InscripcionService {
             throw new RuntimeException("Inscripción no encontrada.");
         }
         inscripcionRepository.deleteById(inscripcionId);
+    }
+
+    // -------------------- NUEVOS MÉTODOS --------------------
+
+    // INSCRIPCIONES por ALUMNO (lista de Inscripcion)
+    public List<Inscripcion> buscarInscripcionesPorAlumno(Long alumnoId) {
+        return inscripcionRepository.findByAlumnoId(alumnoId);
+    }
+
+    // INSCRIPCIONES por CURSO (lista de Inscripcion)
+    public List<Inscripcion> buscarInscripcionesPorCurso(Long cursoId) {
+        return inscripcionRepository.findByCursoId(cursoId);
     }
 }
