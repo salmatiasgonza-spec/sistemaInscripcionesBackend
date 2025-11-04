@@ -39,7 +39,8 @@ public class SecurityConfig {
           "/swagger-ui/**",
           "/swagger-ui.html",
           "/actuator/**",
-          "/error"
+          "/error",
+          "/api/reportes/**" // lo agregue para solucionar los reportes
         ).permitAll()
         .anyRequest().authenticated()
       )
